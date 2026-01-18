@@ -14,7 +14,7 @@ router.get("/stats", async (req, res) => {
     const customersCount = await User.countDocuments();
 
         const incomeResult = await Order.aggregate([
-            { $group: { _id: null, total: { $sum: "$totalCartAmount" } } }
+            { $group: { _id: null, total: { $sum: "$finalAmount"} } }
         ]);
         const income = incomeResult[0]?.total || 0;
 

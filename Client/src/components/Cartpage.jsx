@@ -42,7 +42,7 @@ const Cartpage = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res.data?.CoupansAfterCalculation) setAvailableCoupons(res.data.CoupansAfterCalculation);
-      const activecoupans=res.data.CoupansAfterCalculation(c=>c.isActive)
+      const activecoupans=res.data.CoupansAfterCalculation.filter(c=>c.isActive)
       setAvailableCoupons(activecoupans)
     } catch (err) {
       console.log(err.response?.data || err.message);
@@ -89,19 +89,12 @@ const Cartpage = () => {
     if (cart.totalCartPrice < coupon.minOrderAmount) {
       toast.error(`Add ₹${coupon.minOrderAmount - cart.totalCartPrice} more to use this coupon`);
       return;
-    }
-
-    let discountValue = 0;
-    if (coupon.discountType === "fixedAmount") {
-      discountValue = coupon.discountValue;
-    } else if (coupon.discountType === "percentage") {
-      discountValue = (cart.totalCartPrice * coupon.discountValue) / 100;
-      if (coupon.maxDiscount) discountValue = Math.min(discountValue, coupon.maxDiscount);
-    }
-
-    setAppliedCoupon(coupon.code);
-    setDiscount(discountValue);
-    toast.success(`Coupon ${coupon.code} applied!`);
+    } 
+try {
+  
+} catch (error) {
+  
+}
   };
 
   if (!cart || !cart.items.length)

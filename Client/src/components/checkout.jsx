@@ -15,12 +15,12 @@ function Checkout() {
   }, []);
 
   const payload = {
-    coupanCode: "Food 0",
-    tableNumber: "3",
-    CustomerName: "Priyanshu",
-    CustomerEmail: "priyanshukataria1208@gmail.com",
-    CustomerPhone: "38292",
-    paymentMethod: "razorpay",
+    coupanCode,
+    tableNumber,
+    CustomerName,
+    CustomerEmail,
+    CustomerPhone,
+    paymentMethod,
   };
 
   const handlePlaceOrder = async () => {

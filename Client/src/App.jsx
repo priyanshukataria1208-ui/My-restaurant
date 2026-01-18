@@ -3,32 +3,32 @@ import toast from "react-hot-toast";
 import api from "./lib/api"; // path apne project ke hisaab se
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Register from './components/Register'
+import Register from './Components/Register'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from './components/Login';
-import Navbar from './components/Navbar';
-import UserProduct from './components/UserProduct';
-import Welcome from "./components/welcome";
-import Menu from "./components/Menu"
-import TableData from './components/tabledata';
-import Homepage from './components/Homepage';
-import Admindashbord from './components/Admindashbord';
-import { AuthProvider } from './components/context/AuthContext';
-import { AuthContext } from './components/context/AuthContext';
-import Addfooditem from './components/Addfooditem';
-import Adminfoodproduct from './components/Adminfoodproduct';
-import Footer from './components/Footer';
-import Cartpage from './components/Cartpage';
-import Forgetpassword from './components/Forgetpassword';
-import Resetpassword from './components/Resetpassword';
-import Checkout from './components/checkout';
-import Order from './components/Order';
-import Protectedroutes from './components/Protectedroutes';
-import Orderdetails from './components/Orderdetails';
-import Openroutes from './components/Openroutes';
-import Coupan from './components/Coupan';
-import AdminAddCoupon from './components/Coupan';
-import AdminCouponList from './components/Allcoupan';
+import Login from './Components/Login';
+import Navbar from './Components/Navbar';
+import UserProduct from './Components/UserProduct';
+import Welcome from "./Components/welcome";
+import Menu from "./Components/Menu"
+import TableData from './Components/tabledata';
+import Homepage from './Components/Homepage';
+import Admindashboard from './Components/Admindashbord';
+import { AuthContext } from './Components/context/AuthContext';
+import { AuthProvider } from './Components/context/AuthContext';
+import Addfooditem from './Components/Addfooditem';
+import Adminfoodproduct from './Components/Adminfoodproduct';
+import Footer from './Components/Footer';
+import Cartpage from './Components/Cartpage';
+import Forgetpassword from './Components/Forgetpassword';
+import Resetpassword from './Components/Resetpassword';
+import Checkout from './Components/checkout';
+import Order from './Components/Order';
+import Protectedroutes from './Components/Protectedroutes';
+import Orderdetails from './Components/Orderdetails';
+import Openroutes from './Components/Openroutes';
+import Coupan from './Components/Coupan';
+import AdminAddCoupon from './Components/Coupan';
+import AdminCouponList from './Components/Allcoupan';
 
 
 
@@ -121,7 +121,7 @@ const MainApp = () => {
         <Route path="/table" element={<TableData />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/" element={<Homepage />} />
-        <Route path="/admindash" element={<Protectedroutes><Admindashbord /></Protectedroutes>} />
+        <Route path="/admindash" element={<Protectedroutes><Admindashboard/></Protectedroutes>} />
         <Route path='/admininsertform' element={<Addfooditem />} />
         <Route path='/adminfoodproduct' element={<Adminfoodproduct />} />
 
