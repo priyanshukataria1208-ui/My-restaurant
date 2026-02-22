@@ -2,6 +2,10 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "./context/AuthContext";
+import { FcGoogle } from "react-icons/fc";
+import { auth, googleProvider } from "../../../Server/config/firebase";
+import { signInWithPopup } from "firebase/auth";
+import axios from "axios";
 
 import {
   Theme,
@@ -20,7 +24,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  // ✅ FIX 1
   const [loading, setLoading] = useState(false);
 
   const [formdata, setFormData] = useState({
@@ -33,56 +36,81 @@ const Login = () => {
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
- const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  // ✅ NORMAL LOGIN
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:3000/api/v1/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formdata),
-    });
+    try {
+      setLoading(true);
 
-    const data = await res.json();
+      const res = await axios.post(
+        "http://localhost:3000/api/v1/login",
+        formdata
+      );
 
-    if (!res.ok || !data.success) {
-      toast.error("Invalid credentials");
-      setLoading(false);
-      return;
+      if (!res.data.success) {
+        toast.error("Invalid credentials");
+        return;
+      }
+
+      login(
+        res.data.accessToken,
+        res.data.user.role,
+        res.data.user.id,
+        res.data.user.name,
+        res.data.refreshToken
+      );
+
+      toast.success("Login Successful");
+      navigate(res.data.user.role === "admin" ? "/admindash" : "/");
+
+    } catch (err) {
+      toast.error("Server error");
+    } finally {
+      setLoading(false); // 🔥 loader always OFF
     }
+  };
 
-    login(
-      data.accessToken,
-      data.user.role,
-      data.user.id,
-      data.user.name,
-      data.refreshToken
-    );
+  // ✅ GOOGLE LOGIN (FIXED)
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
 
-    toast.success("Login Successful");
-    setLoading(false);
+      const popupResult = await signInWithPopup(auth, googleProvider);
+      const idToken = await popupResult.user.getIdToken();
 
-    navigate(data.user.role === "admin" ? "/admindash" : "/");
+      const res = await axios.post(
+        "http://localhost:3000/api/v1/google/verify",
+        { idToken }
+      );
 
-  } catch (err) {
-    toast.error("Server error");
-    setLoading(false);
-  }
-};
+      if (!res.data.success) {
+        throw new Error("Google login failed");
+      }
 
+      login(
+        res.data.accessToken,
+        res.data.user.role,
+        res.data.user.id,
+        res.data.user.name,
+        res.data.refreshToken
+      );
 
-  // ✅ FIX 2: Loader show
+      toast.success("Google Login Successful");
+      navigate(res.data.user.role === "admin" ? "/admindash" : "/");
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Google login error");
+    } finally {
+      setLoading(false); // 🔥 loader guaranteed off
+    }
+  };
+
   if (loading) return <Loader />;
 
   return (
-    <Theme
-      appearance="dark"
-      accentColor="sky"
-      grayColor="sand"
-      radius="large"
-      panelBackground="translucent"
-    >
+    <Theme appearance="dark" accentColor="sky">
       <div className="login-bg">
         <Card size="4" className="login-card">
           <form onSubmit={handleLogin}>
@@ -112,13 +140,30 @@ const Login = () => {
                 Forgot password?
               </Link>
 
-              <Button size="3" type="submit" disabled={loading}>
+              <Button size="3" type="submit">
                 Sign In
               </Button>
 
               <Text size="2" align="center" color="gray">
                 Don’t have an account? <Link href="/Reg">Create one</Link>
               </Text>
+
+              {/* 🔥 IMPORTANT FIX */}
+              <Button
+                type="button"
+                size="3"
+                variant="outline"
+                onClick={handleGoogleLogin}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  justifyContent: "center"
+                }}
+              >
+                <FcGoogle size={22} />
+                Continue with Google
+              </Button>
             </Flex>
           </form>
         </Card>

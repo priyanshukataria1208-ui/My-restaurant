@@ -105,7 +105,7 @@ const displayname=name || (role==="guest" ?"Guest":"User")
 
   {profileOpen && (
     <div className="profile-dropdown">
-      {role !== "guest" && <span>Profile</span>}
+      {role !== "guest" && <span><Link to="/profilepage">Profile</Link></span>}
       {role !== "guest" && <span>Settings</span>}
 
       <span

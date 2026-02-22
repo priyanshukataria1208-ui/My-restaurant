@@ -13,16 +13,16 @@ const Sidebar = () => {
 
       <nav className="gd-nav">
         <Link className="active" to="/admindashbord"><FaChartLine /> Dashboard</Link>
-        <Link to="/menu"><FaUtensils /> Menu</Link>
+       <Link to="/adminfoodproduct"><FaUtensils /> Food Product</Link>
         <Link to="/order"><FaList /> Orders</Link>
         <Link to="/usertable"><FaList /> User</Link>
         <Link to="/table"><FaList /> Table</Link>
         <Link to="/coupan"><FaList /> Coupan</Link>
         <Link to="/allcoupan"><FaList/>All Coupan</Link>
-        <Link to="/adminfoodproduct"><FaList /> Food Product</Link>
+   
+        <Link to="/menu"><FaList /> Menu</Link>
         <Link to="/admininsertform"><FaList /> Add Food Item</Link>
-        <Link><FaUsers /> Customers</Link>
-        <Link><FaShoppingCart /> Analytics</Link>
+       
         <h6 id="h6one">Admin</h6>
 
       </nav>

@@ -86,12 +86,7 @@ const AdminFoodProducts = ({ type }) => {
                   </span>
                 </td>
                 <td>
-                  <button
-                    className="action-btn btn-success"
-                    onClick={() => handleUpdate(item._id)}
-                  >
-                    Update
-                  </button>
+                
                   <button
                     className="action-btn btn-danger"
                     onClick={() => handleDelete(item._id)}

@@ -7,6 +7,7 @@ const Order = require("../Models/order");
 const razorpay = require("../config/razorpay");
 const order = require("../Models/order");
 const crypto = require("crypto")
+const mongoose=require("mongoose")
 
 const calculateOrderNumber = () => {
     const date = Date.now();
@@ -259,37 +260,74 @@ exports.verifypayment = async (req, res, next) => {
         });
     }
 };
-
 exports.getorder = async (req, res, next) => {
+  try {
+    const userId = req.query.userId || null;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+
+    if (userId) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid userId" });
+      }
+      filter.userId = mongoose.Types.ObjectId(userId);
+    }
+
+    const totalOrders = await Order.countDocuments(filter);
+    const orders = await Order.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      orders,
+      totalOrders,
+      totalPages: Math.ceil(totalOrders / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Get order error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+exports.getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params; // orderId
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ message: "Invalid order ID" });
+
+    const order = await Order.findById(id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    res.status(200).json({ order });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.monthlysales = async (req, res, next) => {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 })
-        res.status(201).json({
-            orders
+        const sales = await Order.aggregate([
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    totalSales: { $sum: "$finalAmount" },
+                    orders: { $sum: 1 },
+
+                }
+            },
+            { $sort: { "_id": 1 } }
+        ])
+        res.json({
+            success: true, sales
         })
     } catch (error) {
-        next(error)
+        console.error("Monthly sales error:", error);
+        res.status(500).json({ message: error.message });
     }
-}
-
-exports.monthlysales=async(req,res,next)=>{
- try {
-       const sales=await Order.aggregate([
-        {
-            $group:{
-                _id:{$month:"$createdAt"},
-                totalSales:{$sum:"$finalAmount"},
-                orders:{$sum:1},
-
-            }
-        },
-        {$sort:{"_id":1}}
-    ])
-    res.json({
-        success:true,sales
-    })
- } catch (error) {
-   console.error("Monthly sales error:", error);
-    res.status(500).json({ message: error.message });
- }
 }
 

@@ -29,6 +29,7 @@ import Openroutes from './Components/Openroutes';
 import Coupan from './Components/Coupan';
 import AdminAddCoupon from './Components/Coupan';
 import AdminCouponList from './Components/Allcoupan';
+import  Profilepages  from './Components/Profilepages';
 
 
 
@@ -121,7 +122,7 @@ const MainApp = () => {
         <Route path="/table" element={<TableData />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/" element={<Homepage />} />
-        <Route path="/admindash" element={<Protectedroutes><Admindashboard/></Protectedroutes>} />
+        <Route path="/admindash" element={<Protectedroutes><Admindashboard /></Protectedroutes>} />
         <Route path='/admininsertform' element={<Addfooditem />} />
         <Route path='/adminfoodproduct' element={<Adminfoodproduct />} />
 
@@ -129,15 +130,17 @@ const MainApp = () => {
         <Route path="/forget" element={<Forgetpassword />} />
         <Route path='/checkout' element={<Checkout />} />
         <Route path="/reset-password/:token" element={<Resetpassword />} />
-        <Route path ="/coupan" element={<Coupan/>}/>
-        <Route path='/allcoupan' element={<AdminCouponList/>}/>
-
+        <Route path="/coupan" element={<Coupan />} />
+        <Route path='/allcoupan' element={<AdminCouponList />} />
+        <Route path='/profilepage' element={<Profilepages />} />
         <Route path='/order' element={<Order />} />
-        <Route path="/admin/order/:id" element={<Orderdetails/>}/>
+        <Route path="/order/:id" element={<Orderdetails />} />
 
       </Routes>
 
       {/* Footer only for non-admin users */}
+
+
 
 
     </>

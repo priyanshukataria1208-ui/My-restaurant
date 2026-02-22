@@ -105,6 +105,7 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "preparing", "ready", "served"],
       default: "pending",
     },
+    
 
     razorPayOrderId: {type:String},
     razorPayPaymentId: {type:String},
