@@ -1,12 +1,15 @@
 const Cart = require("../Models/cart");
 const Menu = require("../Models/menu");
+const User = require("../Models/User");
 
-// Helper: calculate total price
+// ================= HELPER =================
 const calculateTotal = async (cart) => {
   let total = 0;
   for (const item of cart.items) {
     const menu = await Menu.findById(item.menuItemId);
-    if (menu) total += Number(menu.price) * Number(item.quantity);
+    if (menu) {
+      total += Number(menu.price) * Number(item.quantity);
+    }
   }
   return total;
 };
@@ -14,15 +17,23 @@ const calculateTotal = async (cart) => {
 // ================= ADD TO CART =================
 exports.addToCart = async (req, res) => {
   try {
-    const userId = req.user._id; // ✅ JWT se
-    const { menuItemId, quantity = 1 } = req.body;
+    const userId = req.user._id;
+    const { menuItemId, quantity = 1, tableNumber } = req.body;
 
     if (!menuItemId) {
       return res.status(400).json({ message: "menuItemId missing" });
     }
 
     let cart = await Cart.findOne({ userId });
-    if (!cart) cart = new Cart({ userId, items: [] });
+
+    // 🆕 first time cart
+    if (!cart) {
+      cart = new Cart({
+        userId,
+        tableNumber, // ✅ TABLE SAVE HERE
+        items: [],
+      });
+    }
 
     const menuItem = await Menu.findById(menuItemId);
     if (!menuItem) {
@@ -53,19 +64,41 @@ exports.getCart = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    // 👤 USER
+    const user = await User.findById(userId).select("name email phone");
+
+    // 🛒 CART
     const cart = await Cart.findOne({ userId })
       .populate("items.menuItemId");
 
+    // ❌ cart not found
     if (!cart) {
       return res.json({
         success: true,
-        cart: { items: [], totalCartPrice: 0 },
+        cart: {
+          items: [],
+          totalCartPrice: 0,
+          tableNumber: null,
+        },
+        user,
       });
     }
 
-    res.json({ success: true, cart });
+    // ✅ FINAL RESPONSE
+    res.json({
+      success: true,
+      cart: {
+        items: cart.items,
+        totalCartPrice: cart.totalCartPrice,
+        tableNumber: cart.tableNumber, // ✅ TABLE HERE
+      },
+      user,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 

@@ -7,7 +7,7 @@ const Order = require("../Models/order");
 const razorpay = require("../config/razorpay");
 const order = require("../Models/order");
 const crypto = require("crypto")
-const mongoose=require("mongoose")
+const mongoose = require("mongoose")
 
 const calculateOrderNumber = () => {
     const date = Date.now();
@@ -19,18 +19,14 @@ exports.createOrder = async (req, res, next) => {
     try {
         const {
             coupanCode,
-            tableNumber, // optional now
-
+            tableNumber, // optional now 
             notes,
+            
             paymentMethod,
         } = req.body || {};
 
-        // ✅ Optional table
-        if (!tableNumber) {
-            const error = new Error('No table Found');
-            error.status = 404;
-            throw error;
-        }
+        // ✅ Optional 
+     
 
         // ✅ User ID
         const userId = req.user?.id;
@@ -39,6 +35,14 @@ exports.createOrder = async (req, res, next) => {
         const cartItems = await Cart.findOne({ userId }).populate("items.menuItemId");
         if (!cartItems || !cartItems.items.length) {
             return res.status(400).json({ message: "Cart is empty" });
+        }
+
+           const tableNO=tableNumber||cartItems.tableNumber
+      
+        if (!tableNO) {
+            const error = new Error('No table Found');
+            error.status = 404;
+            throw error;
         }
 
         // ✅ Prepare order items & subtotal
@@ -59,9 +63,9 @@ exports.createOrder = async (req, res, next) => {
         });
         let CoupansAfterCalculation = null;
 
-        const totalCartPrice = subTotal;
+        let totalCartPrice = subTotal;
         if (CoupansAfterCalculation?.isAvailable) {
-            totalCartPrice = CoupansAfterCalculation.finalAmount
+            totalCartPrice = CoupansAfterCalculation.finalAmount;
         }
 
         // ✅ Fetch coupon (safe trim + case-insensitive)
@@ -122,7 +126,7 @@ exports.createOrder = async (req, res, next) => {
             subTotal,
             finalAmount: totalCartPrice,
             coupanCode: coupanCode || null,
-            tableNumber: tableNumber || null,
+            tableNumber: tableNO || null,
             customerEmail: CustomerEmail || null,
             customerName: CustomerName || null,
             customerPhone: CustomerPhone || null,
@@ -169,7 +173,7 @@ exports.createOrder = async (req, res, next) => {
 
 
         // ✅ Save order to DB
-        const newOrder = await Order.create(dataOfOrder);
+     
 
         // ✅ Response
         res.json({
@@ -180,7 +184,7 @@ exports.createOrder = async (req, res, next) => {
             CustomerEmail,
             CustomerPhone,
             CoupansAfterCalculation,
-            table: tableDoc,
+            table: tableNO,
         });
 
     } catch (error) {
@@ -261,52 +265,52 @@ exports.verifypayment = async (req, res, next) => {
     }
 };
 exports.getorder = async (req, res, next) => {
-  try {
-    const userId = req.query.userId || null;
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 100;
-    const skip = (page - 1) * limit;
+    try {
+        const userId = req.query.userId || null;
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 100;
+        const skip = (page - 1) * limit;
 
-    const filter = {};
+        const filter = {};
 
-    if (userId) {
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: "Invalid userId" });
-      }
-      filter.userId = mongoose.Types.ObjectId(userId);
+        if (userId) {
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                return res.status(400).json({ message: "Invalid userId" });
+            }
+            filter.userId = mongoose.Types.ObjectId(userId);
+        }
+
+        const totalOrders = await Order.countDocuments(filter);
+        const orders = await Order.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        return res.status(200).json({
+            orders,
+            totalOrders,
+            totalPages: Math.ceil(totalOrders / limit),
+            currentPage: page,
+        });
+    } catch (error) {
+        console.error("Get order error:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
-
-    const totalOrders = await Order.countDocuments(filter);
-    const orders = await Order.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    return res.status(200).json({
-      orders,
-      totalOrders,
-      totalPages: Math.ceil(totalOrders / limit),
-      currentPage: page,
-    });
-  } catch (error) {
-    console.error("Get order error:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
 };
 exports.getOrderById = async (req, res) => {
-  try {
-    const { id } = req.params; // orderId
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ message: "Invalid order ID" });
+    try {
+        const { id } = req.params; // orderId
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return res.status(400).json({ message: "Invalid order ID" });
 
-    const order = await Order.findById(id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+        const order = await Order.findById(id);
+        if (!order) return res.status(404).json({ message: "Order not found" });
 
-    res.status(200).json({ order });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+        res.status(200).json({ order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 };
 
 exports.monthlysales = async (req, res, next) => {
