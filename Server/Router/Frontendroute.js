@@ -3,6 +3,15 @@ const { generateAccessToken, generateRefreshToken } = require("../utlis/jwt")
 const UserC = require("../Controller/Usercontroller");
 const SessionTokenVerify = require("../middleware/SessionTokenVerify")
 
+var admin = require("firebase-admin");
+
+var serviceAccount = require("../key/test-e872e-firebase-adminsdk-fbsvc-4035a1735e.json");
+const User = require("../Models/User");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -16,14 +25,7 @@ router.post("/convert", SessionTokenVerify, (req, res) => {
   console.log("Hello")
 })
 
-var admin = require("firebase-admin");
 
-var serviceAccount = require("../key/test-e872e-firebase-adminsdk-fbsvc-9dc7f5ea0e.json");
-const User = require("../Models/User");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
 router.post("/google/verify", async (req, res, next) => {
   try {
     // Google frontend se credential aata hai
