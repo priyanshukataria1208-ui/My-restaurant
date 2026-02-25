@@ -15,7 +15,7 @@ import store from './app/store'
 import { Provider } from 'react-redux'
 import { ToastProvider } from './components/context/ToastProvider.jsx';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './Components/context/AuthContext.jsx';
+import { AuthProvider } from './components/context/AuthContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
