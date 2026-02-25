@@ -9,8 +9,8 @@ import Login from './components/Login';
 import Navbar from './components/Navbar';
 import UserProduct from './components/UserProduct';
 import Welcome from "./components/welcome";
-import Menu from "./components/Menu"
-import TableData from './components/tabledata';
+import Menu from "./components/Menu";
+import TableData from "./components/TableData"
 import Homepage from './components/Homepage';
 import Admindashboard from './components/Admindashbord';
 import { AuthContext,AuthProvider } from './components/context/AuthContext';
@@ -119,7 +119,7 @@ const MainApp = () => {
         <Route path="/Login" element={<Login />} />
         <Route path="/usertable" element={<UserProduct />} />
         <Route path="/welcome" element={<Welcome />} />
-        <Route path="/table" element={<TableData />} />
+       <Route path='/table'  element={<TableData/>}/>
         <Route path="/menu" element={<Menu />} />
         <Route path="/" element={<Homepage />} />
         <Route path="/admindash" element={<Protectedroutes><Admindashboard /></Protectedroutes>} />
