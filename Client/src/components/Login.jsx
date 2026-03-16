@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "./context/AuthContext";
 import { FcGoogle } from "react-icons/fc";
-import { auth, googleProvider } from "../../../Server/config/firebase";
+import { auth, googleProvider } from "../firbase";
 import { signInWithPopup } from "firebase/auth";
 import axios from "axios";
 
