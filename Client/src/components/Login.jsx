@@ -98,7 +98,7 @@ const Login = () => {
       navigate(res.data.user.role === "admin" ? "/admindash" : "/");
     } catch (error) {
       console.error(error);
-      toast.error("Google login error");
+      toast.error(error?.response?.data?.message || "Google login error");
     } finally {
       setLoading(false);
     }
