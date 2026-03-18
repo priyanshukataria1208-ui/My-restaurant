@@ -1,20 +1,31 @@
 const router = require("express").Router();
+const fs = require("fs");
+const path = require("path");
 const { generateAccessToken, generateRefreshToken } = require("../utlis/jwt")
 const UserC = require("../Controller/Usercontroller");
 const SessionTokenVerify = require("../middleware/SessionTokenVerify")
 
 var admin = require("firebase-admin");
-
-var serviceAccount = require("../key/test-e872e-firebase-adminsdk-fbsvc-4035a1735e.json");
 const User = require("../Models/User");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
 
 const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const firebaseKeyPath = path.join(
+  __dirname,
+  "..",
+  "key",
+  "test-e872e-firebase-adminsdk-fbsvc-4035a1735e.json"
+);
+const isGoogleAuthConfigured =
+  Boolean(process.env.GOOGLE_CLIENT_ID) && fs.existsSync(firebaseKeyPath);
+
+if (isGoogleAuthConfigured && !admin.apps.length) {
+  const serviceAccount = require(firebaseKeyPath);
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
 router.post("/register", UserC.Register);
 router.post("/login", UserC.Login);
@@ -28,6 +39,14 @@ router.post("/convert", SessionTokenVerify, (req, res) => {
 
 router.post("/google/verify", async (req, res, next) => {
   try {
+    if (!isGoogleAuthConfigured) {
+      return res.status(503).json({
+        success: false,
+        message:
+          "Google login is not configured. Add GOOGLE_CLIENT_ID and the Firebase service account key file.",
+      });
+    }
+
     // Google frontend se credential aata hai
     const { credential } = req.body;
 
@@ -38,15 +57,16 @@ router.post("/google/verify", async (req, res, next) => {
       });
     }
 
-    const { user, accessToken, refreshToken } =
-      await googleAuthServiece(credential);
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
 
     res.status(200).json({
       success: true,
-      message: "Login successful",
-      data: user,
-      accessToken,
-      refreshToken,
+      message: "Google token verified",
+      data: payload,
     });
   } catch (error) {
     next(error);

@@ -146,6 +146,12 @@ exports.createOrder = async (req, res, next) => {
             })
         }
         if (paymentMethod === "razorpay") {
+            if (!razorpay) {
+                return res.status(503).json({
+                    message: "Razorpay is not configured. Add RAZORPAY_API_KEY and RAZORPAY_API_SECRET.",
+                });
+            }
+
             const options = {
                 amount: totalCartPrice * 100,
                 currency: "INR",
@@ -195,6 +201,13 @@ exports.createOrder = async (req, res, next) => {
 
 exports.verifypayment = async (req, res, next) => {
     try {
+        if (!razorpay) {
+            return res.status(503).json({
+                success: false,
+                message: "Razorpay is not configured. Add RAZORPAY_API_KEY and RAZORPAY_API_SECRET.",
+            });
+        }
+
         const { paymentId, signature, razorPayOrderId } = req.body;
 
         const order = await Order.findOne({ razorPayOrderId });
@@ -334,4 +347,3 @@ exports.monthlysales = async (req, res, next) => {
         res.status(500).json({ message: error.message });
     }
 }
-

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "./context/AuthContext";
 import { FcGoogle } from "react-icons/fc";
-import { auth, googleProvider } from "../firbase";
+import { auth, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import axios from "axios";
 
@@ -14,7 +14,7 @@ import {
   TextField,
   Button,
   Flex,
-  Link
+  Link,
 } from "@radix-ui/themes";
 
 import "@radix-ui/themes/styles.css";
@@ -36,7 +36,6 @@ const Login = () => {
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  // ✅ NORMAL LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -45,7 +44,7 @@ const Login = () => {
 
       const res = await axios.post(
         "http://localhost:3000/api/v1/login",
-        formdata
+        formdata,
       );
 
       if (!res.data.success) {
@@ -58,20 +57,19 @@ const Login = () => {
         res.data.user.role,
         res.data.user.id,
         res.data.user.name,
-        res.data.refreshToken
+        res.data.refreshToken,
       );
 
       toast.success("Login Successful");
       navigate(res.data.user.role === "admin" ? "/admindash" : "/");
-
     } catch (err) {
-      toast.error("Server error");
+      toast.error(err?.response?.data?.message || "Login failed");
     } finally {
-      setLoading(false); // 🔥 loader always OFF
+      setLoading(false);
     }
   };
 
-  // ✅ GOOGLE LOGIN (FIXED)
+
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
@@ -81,7 +79,7 @@ const Login = () => {
 
       const res = await axios.post(
         "http://localhost:3000/api/v1/google/verify",
-        { idToken }
+        { credential: idToken },
       );
 
       if (!res.data.success) {
@@ -93,17 +91,16 @@ const Login = () => {
         res.data.user.role,
         res.data.user.id,
         res.data.user.name,
-        res.data.refreshToken
+        res.data.refreshToken,
       );
 
       toast.success("Google Login Successful");
       navigate(res.data.user.role === "admin" ? "/admindash" : "/");
-
     } catch (error) {
       console.error(error);
       toast.error("Google login error");
     } finally {
-      setLoading(false); // 🔥 loader guaranteed off
+      setLoading(false);
     }
   };
 
@@ -145,7 +142,7 @@ const Login = () => {
               </Button>
 
               <Text size="2" align="center" color="gray">
-                Don’t have an account? <Link href="/Reg">Create one</Link>
+                Don't have an account? <Link href="/Reg">Create one</Link>
               </Text>
 
               {/* 🔥 IMPORTANT FIX */}
@@ -158,7 +155,7 @@ const Login = () => {
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
-                  justifyContent: "center"
+                  justifyContent: "center",
                 }}
               >
                 <FcGoogle size={22} />
