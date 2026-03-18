@@ -38,7 +38,9 @@ function Checkout() {
 
       setCart(res.data.cart);
       setUser(res.data.user);
-      setTotalAmount(res.data.cart.totalCartPrice);
+      const finalAmount =
+        (res.data.cart?.totalCartPrice || 0) - (res.data.cart?.discount || 0);
+      setTotalAmount(finalAmount);
     } catch (err) {
       toast.error("Failed to load cart");
     }
@@ -105,7 +107,7 @@ function Checkout() {
         },
       }).open();
     } catch (err) {
-      toast.error("Order failed");
+      toast.error(err?.response?.data?.message || "Order failed");
       setLoading(false);
     }
   };
