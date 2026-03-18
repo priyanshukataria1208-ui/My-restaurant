@@ -120,7 +120,7 @@ function Checkout() {
             {/* 👤 USER */}
             <div className="order-info">
               <p><b>Name:</b> {user?.name}</p>
-              <p><b>Table No:</b> #{cart?.tableNO}</p>
+              <p><b>Table No:</b> #{cart?.tableNumber || "N/A"}</p>
             </div>
 
             <hr />
