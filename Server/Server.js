@@ -2,14 +2,28 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require('events').EventEmitter.defaultMaxListeners = 20; 
+require("dotenv").config();
 
 // JSON Parser
 app.use(express.json());
 
 // CORS
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+]
+  .flatMap((value) => (value ? value.split(",") : []))
+  .map((value) => value.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "PUT", "POST","PATCH", "DELETE"],
     credentials: true,
   })
@@ -85,11 +99,13 @@ app.get("/api/v1/stats", (req, res) => {
 });
 // Start Server (Only once!)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
-
+module.exports = app;
 
 
 

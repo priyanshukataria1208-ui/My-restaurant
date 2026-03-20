@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { API_V1_URL } from "../lib/config";
 
 import { AuthContext } from "./context/AuthContext";
 
-const API = "http://localhost:3000/api/v1/getuser";
+const API = `${API_V1_URL}/getuser`;
 
 const UserProduct = () => {
   const { accessToken,role } = useContext(AuthContext);

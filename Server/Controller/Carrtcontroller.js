@@ -30,9 +30,13 @@ exports.addToCart = async (req, res) => {
     if (!cart) {
       cart = new Cart({
         userId,
-        tableNumber, // ✅ TABLE SAVE HERE
+        tableNumber: tableNumber || undefined,
         items: [],
       });
+    }
+
+    if (!cart.tableNumber && tableNumber) {
+      cart.tableNumber = tableNumber;
     }
 
     const menuItem = await Menu.findById(menuItemId);
@@ -79,6 +83,8 @@ exports.getCart = async (req, res) => {
           items: [],
           totalCartPrice: 0,
           tableNumber: null,
+          appliedCoupon: null,
+          discount: 0,
         },
         user,
       });
@@ -90,7 +96,9 @@ exports.getCart = async (req, res) => {
       cart: {
         items: cart.items,
         totalCartPrice: cart.totalCartPrice,
-        tableNumber: cart.tableNumber, // ✅ TABLE HERE
+        tableNumber: cart.tableNumber,
+        appliedCoupon: cart.appliedCoupon || null,
+        discount: cart.discount || 0,
       },
       user,
     });

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { API_V1_URL } from "../lib/config";
 
 
 const AddFoodItem = ({ type }) => {
@@ -22,8 +23,8 @@ const AddFoodItem = ({ type }) => {
     Object.entries(formdata).forEach(([key, value]) => Data.append(key, value));
 
     const apiURL = type === "menu"
-      ? "http://localhost:3000/api/v1/menu"
-      : "http://localhost:3000/api/v1/products";
+      ? `${API_V1_URL}/menu`
+      : `${API_V1_URL}/products`;
 
     try {
       const res = await fetch(apiURL, { method: "POST", body: Data });

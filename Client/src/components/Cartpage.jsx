@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 import axios from "axios";
 import toast from "react-hot-toast";
-import api from "../lib/api";
+import { API_V1_URL } from "../lib/config";
 
 const Cartpage = () => {
   const { userId, accessToken } = useContext(AuthContext);
@@ -24,7 +24,7 @@ const Cartpage = () => {
 
   const fetchCart = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/", {
+      const res = await axios.get(`${API_V1_URL}/`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res.data?.cart) {
@@ -40,7 +40,7 @@ const Cartpage = () => {
 
   const fetchCoupons = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/coupan", {
+      const res = await axios.get(`${API_V1_URL}/coupan`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res.data?.CoupansAfterCalculation) setAvailableCoupons(res.data.CoupansAfterCalculation);
@@ -55,7 +55,7 @@ const Cartpage = () => {
   const increment = async (menuItemId) => {
     setLoadingItem(menuItemId);
     await axios.post(
-      "http://localhost:3000/api/v1/increment",
+      `${API_V1_URL}/increment`,
       { menuItemId },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -66,7 +66,7 @@ const Cartpage = () => {
   const decrement = async (menuItemId) => {
     setLoadingItem(menuItemId);
     await axios.post(
-      "http://localhost:3000/api/v1/decrement",
+      `${API_V1_URL}/decrement`,
       { menuItemId },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -77,7 +77,7 @@ const Cartpage = () => {
   const removeItem = async (menuItemId) => {
     setLoadingItem(menuItemId);
     await axios.post(
-      "http://localhost:3000/api/v1/remove",
+      `${API_V1_URL}/remove`,
       { menuItemId },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -96,7 +96,7 @@ const Cartpage = () => {
     try {
       setApplyingCoupon(true);
       const res = await axios.post(
-        "http://localhost:3000/api/v1/coupan/apply",
+        `${API_V1_URL}/coupan/apply`,
         { couponCode: coupon.code },
         {
           headers: {

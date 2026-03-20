@@ -1,24 +1,17 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
-import { useSelector } from "react-redux";
+import api from "../lib/api";
 
 const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const profileRef = useRef(null);
 
   const navigate = useNavigate();
  
     
   const { accessToken, role, logout ,name} = useContext(AuthContext);
-
-  // ✅ Redux + localStorage fallback
-
-
- 
-
-  // 🔥 Cart count
-  const cartCount = useSelector((state) => state.cart?.items?.length || 0);
 
   // 🔹 Sync name with Redux state
  
@@ -32,6 +25,24 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (!accessToken || role === "guest") {
+        setCartCount(0);
+        return;
+      }
+
+      try {
+        const res = await api.get("/v1/");
+        setCartCount(res.data?.cart?.items?.length || 0);
+      } catch {
+        setCartCount(0);
+      }
+    };
+
+    fetchCartCount();
+  }, [accessToken, role]);
 
   if (!role) return null;
 

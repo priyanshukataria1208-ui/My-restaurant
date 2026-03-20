@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_V1_URL } from "../../lib/config";
 
 /* Top 4 stat cards */
 const TopStats = () => {
@@ -10,7 +11,7 @@ const TopStats = () => {
  useEffect(() => {
 const fetchStats = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/api/v1/stats");
+    const response = await axios.get(`${API_V1_URL}/stats`);
     setStats([
       { title: "Orders", value: response.data.orders.toLocaleString(), subtitle: "weekly" },
       { title: "Customers", value: response.data.customers.toLocaleString(), subtitle: "total" },
