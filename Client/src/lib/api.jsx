@@ -1,49 +1,37 @@
-import axios from"axios"
+import axios from "axios";
+import { API_BASE_URL, API_V1_URL } from "./config";
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: API_BASE_URL,
 });
-//interceptors
+
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  console.log('console via request interceptors', token)
-  config.headers.Authorization = `Bearer ${token}`;
-  config.headers.name = 'ritesh';
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
 api.interceptors.response.use(
-  (response) => {
-    console.log('interceptors response', response)
-    // Process successful responses
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log(error)
-    console.log(error.config)
-    if (error.response.status === 401) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/v1/auth/refresh',
-          { refreshToken: localStorage.getItem('refreshToken') }
+          `${API_V1_URL}/refresh`,
+          { refreshToken: localStorage.getItem("refreshToken") }
         );
-        console.log('token', response.data.accessToken);
-        localStorage.setItem('accessToken', response.data.accessToken);
-        originalRequest.headers[
-          'Authorization'
-        ] = `Bearer ${localStorage.getItem('accessToken')}`;
-        api(originalRequest);
-        //1save it to local
-        // then call the api again
-      } catch (error) {
-        console.log(error);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+        return api(originalRequest);
+      } catch (_refreshError) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
       }
     }
-    //   } else if (error.response.status === 500) {
-    //     // Handle server errors
-    //     console.error('Server error');
-    //   }
     return Promise.reject(error);
   }
 );

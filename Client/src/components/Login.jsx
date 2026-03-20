@@ -19,6 +19,7 @@ import {
 
 import "@radix-ui/themes/styles.css";
 import Loader from "./Loading";
+import { API_V1_URL } from "../lib/config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const Login = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:3000/api/v1/login",
+        `${API_V1_URL}/login`,
         formdata,
       );
 
@@ -78,7 +79,7 @@ const Login = () => {
       const idToken = await popupResult.user.getIdToken();
 
       const res = await axios.post(
-        "http://localhost:3000/api/v1/google/verify",
+        `${API_V1_URL}/google/verify`,
         { credential: idToken },
       );
 

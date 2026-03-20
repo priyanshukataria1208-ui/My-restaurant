@@ -13,6 +13,7 @@ import {
 } from "@radix-ui/themes";
 
 import "@radix-ui/themes/styles.css";
+import { API_V1_URL } from "../lib/config";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/v1/register", {
+      const res = await fetch(`${API_V1_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),

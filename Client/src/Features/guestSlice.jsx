@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_V1_URL } from "../lib/config";
 
 const initialState = {
   sessionToken: null,
@@ -14,7 +15,7 @@ export const session = createAsyncThunk(
   async (data, thunkApi) => {
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/session",
+        `${API_V1_URL}/session`,
         data
       );
       return res.data;

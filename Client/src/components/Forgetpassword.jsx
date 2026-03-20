@@ -11,6 +11,7 @@ import {
 } from "@radix-ui/themes";
 
 import Loader from "./Loading";
+import { API_V1_URL } from "../lib/config";
 
 const Forgetpassword = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ const Forgetpassword = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/v1/forgot-password",
+        `${API_V1_URL}/forgot-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

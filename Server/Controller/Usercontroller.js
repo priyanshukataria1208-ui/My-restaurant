@@ -6,6 +6,7 @@ const transporter = require("../services/templates/emailservice");
 const registerTemplates = require("../services/templates/registerTemplate");
 const crypto = require("crypto");
 const resertemplate = require("../services/templates/resettemplate");
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
 exports.Register = async (req, res) => {
   try {
@@ -168,7 +169,7 @@ exports.ForgotPassword = async (req, res) => {
 
     await user.save();
 
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetLink = `${frontendUrl}/reset-password/${resetToken}`;
 
     const info = await transporter.sendMail({
       from: '"priyanshukataria1208@gmail.com',

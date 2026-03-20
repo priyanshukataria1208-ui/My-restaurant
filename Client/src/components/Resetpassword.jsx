@@ -10,6 +10,7 @@ import {
   Button,
   Flex
 } from "@radix-ui/themes";
+import { API_V1_URL } from "../lib/config";
 
 const Resetpassword = () => {
   const { token } = useParams();
@@ -28,7 +29,7 @@ const Resetpassword = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/v1/reset-password/${token}`,
+        `${API_V1_URL}/reset-password/${token}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

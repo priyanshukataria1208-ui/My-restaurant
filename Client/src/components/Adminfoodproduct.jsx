@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { API_V1_URL } from "../lib/config";
 
 const AdminFoodProducts = ({ type }) => {
   const [items, setItems] = useState([]);
@@ -9,8 +10,8 @@ const AdminFoodProducts = ({ type }) => {
   // Fetch items
   const fetchItems = () => {
     const apiURL = type === "menu"
-      ? "http://localhost:3000/api/v1/menu"
-      : "http://localhost:3000/api/v1/products";
+      ? `${API_V1_URL}/menu`
+      : `${API_V1_URL}/products`;
 
     fetch(apiURL)
       .then(res => res.json())
@@ -27,8 +28,8 @@ const AdminFoodProducts = ({ type }) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     const apiURL = type === "menu"
-      ? `http://localhost:3000/api/v1/menu/${id}`
-      : `http://localhost:3000/api/v1/products/${id}`;
+      ? `${API_V1_URL}/menu/${id}`
+      : `${API_V1_URL}/products/${id}`;
 
     try {
       const res = await fetch(apiURL, { method: "DELETE" });
