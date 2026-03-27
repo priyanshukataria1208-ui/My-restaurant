@@ -86,9 +86,6 @@ app.get(
 );
 
 // ✅ TEST ROUTE
-app.get("/api", (req, res) => {
-  res.send("API RUNNING 🚀");
-});
 
 
 // ✅ STATS ROUTE
@@ -108,6 +105,13 @@ app.use((err, req, res, next) => {
     message: err.message || "Server error",
   });
 });
+app.get("/api", (req, res) => {
+  res.send("API RUNNING 🚀");
+});
+app.get("/api/v1/test", (req, res) => {
+  res.json({ message: "V1 API WORKING 🚀" });
+});
+
 
 // ✅ EXPORT FOR VERCEL
 module.exports = app;
