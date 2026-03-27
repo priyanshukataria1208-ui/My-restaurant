@@ -105,11 +105,8 @@ app.use((err, req, res, next) => {
     message: err.message || "Server error",
   });
 });
-app.get("/api", (req, res) => {
-  res.send("API RUNNING 🚀");
-});
-app.get("/api/v1/test", (req, res) => {
-  res.json({ message: "V1 API WORKING 🚀" });
+app.get("/", (req, res) => {
+  res.send("SERVER RUNNING 🚀");
 });
 
 
