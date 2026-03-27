@@ -51,6 +51,7 @@ const Login = () => {
         formdata
       );
 
+
       console.log("LOGIN RESPONSE:", res.data);
 
       if (!res.data.success) {
@@ -59,7 +60,7 @@ const Login = () => {
       }
 
       // ✅ TOKEN SAVE (MAIN FIX)
-      localStorage.setItem("token", res.data.accessToken);
+      localStorage.setItem("accesstoken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
@@ -95,6 +96,7 @@ const Login = () => {
         `${API_V1_URL}/google/verify`,
         { credential: idToken }
       );
+
 
       if (!res.data.success) {
         throw new Error("Google login failed");

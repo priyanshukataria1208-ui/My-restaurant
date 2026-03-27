@@ -86,9 +86,10 @@ app.get(
 );
 
 // ✅ TEST ROUTE
-app.get("/api/v1/test", (req, res) => {
-  res.json({ message: "Backend working 🚀" });
+app.get("/api", (req, res) => {
+  res.send("API RUNNING 🚀");
 });
+
 
 // ✅ STATS ROUTE
 app.get("/api/v1/stats", (req, res) => {
