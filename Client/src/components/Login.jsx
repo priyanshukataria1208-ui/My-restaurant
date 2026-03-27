@@ -37,40 +37,53 @@ const Login = () => {
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
+  // 🔥 LOGIN FIXED
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
+      console.log("API:", API_V1_URL);
+
       const res = await axios.post(
         `${API_V1_URL}/login`,
-        formdata,
+        formdata
       );
+
+      console.log("LOGIN RESPONSE:", res.data);
 
       if (!res.data.success) {
         toast.error("Invalid credentials");
         return;
       }
 
+      // ✅ TOKEN SAVE (MAIN FIX)
+      localStorage.setItem("token", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // context
       login(
         res.data.accessToken,
         res.data.user.role,
         res.data.user.id,
         res.data.user.name,
-        res.data.refreshToken,
+        res.data.refreshToken
       );
 
-      toast.success("Login Successful");
+      toast.success("Login Successful 🚀");
+
       navigate(res.data.user.role === "admin" ? "/admindash" : "/");
     } catch (err) {
+      console.log("LOGIN ERROR:", err);
       toast.error(err?.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
-
+  // 🔥 GOOGLE LOGIN FIXED
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
@@ -80,22 +93,28 @@ const Login = () => {
 
       const res = await axios.post(
         `${API_V1_URL}/google/verify`,
-        { credential: idToken },
+        { credential: idToken }
       );
 
       if (!res.data.success) {
         throw new Error("Google login failed");
       }
 
+      // ✅ SAME FIX
+      localStorage.setItem("token", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
       login(
         res.data.accessToken,
         res.data.user.role,
         res.data.user.id,
         res.data.user.name,
-        res.data.refreshToken,
+        res.data.refreshToken
       );
 
-      toast.success("Google Login Successful");
+      toast.success("Google Login Successful 🚀");
+
       navigate(res.data.user.role === "admin" ? "/admindash" : "/");
     } catch (error) {
       console.error(error);
@@ -146,7 +165,6 @@ const Login = () => {
                 Don't have an account? <Link href="/Reg">Create one</Link>
               </Text>
 
-              {/* 🔥 IMPORTANT FIX */}
               <Button
                 type="button"
                 size="3"
